@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <title>Lab7</title>
+
+    <style type="text/css">
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="Canvas" width="1024" height="768"></canvas>
+    <script type="text/javascript">
+        var canvas = document.getElementById("Canvas");
+        var ctx = canvas.getContext("2d");
+        //rectangles between 0 -100
+        var numRects = Math.round(Math.random() * 101);
+        var rects = [];
+        //circles between 0-100
+        var numCircles = Math.round(Math.random() * 101);
+        var circles = [];
+        //function for circles
+        function Circle(x, y, vx, vy) {
+
+            this.x = x;
+            this.y = y;
+            //random colors
+            this.color = "rgb(" + Math.round(Math.random() * 256) + "," + Math.round(Math.random() * 256) + ',' + Math.round(Math.random() * 256) + ")";
+            //random radius
+            this.radius = Math.round(Math.random() * 30);
+            this.vx = vx;
+            this.vy = vy;
+            //gravity function
+            this.moveDown = function() {
+
+                this.y = this.y + this.vy;
+            };
+
+
+            //drawing circles
+            this.draw = function() {
+                ctx.beginPath();
+                ctx.fillStyle = this.color;
+                ctx.strokeStyle = this.color;
+                ctx.arc(this.x, this.y, this.radius, 0, 6.28);
+                ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+            };
+            //collision detection for change in gravity and reduction of effect of gravity on ball motion on contact with the canvas surface
+            this.collision = function() {
+
+                if (this.y + this.vy < this.radius || this.y + this.vy > canvas.height - this.radius) {
+
+                    this.vy = -0.5 * this.vy;
+
+                }
+
+
+            }
+
+
+        }
+
+
+        //function for rectangles
+        function Rectangle(x, y, vx, vy) {
+
+            this.x = x;
+            this.y = y;
+            //random colors of rectangles
+            this.color = "rgb(" + Math.round(Math.random() * 256) + "," + Math.round(Math.random() * 256) + ',' + Math.round(Math.random() * 256) + ")";
+            //random height and width
+            this.width = Math.round(Math.random() * 70);
+            this.height = Math.round(Math.random() * 40);
+            this.vx = vx;
+            this.vy = vy;
+            //right direction movement of rectangles
+            this.moveRight = function() {
+
+                this.x = this.x + this.vx;
+            };
+
+            //drawing constructor for rectangles
+            this.draw = function() {
+                ctx.beginPath();
+                ctx.fillStyle = this.color;
+                ctx.strokeStyle = this.color;
+                ctx.rect(this.x, this.y, this.width, this.height);
+                ctx.fill();
+                ctx.stroke();
+
+            };
+            //change in direction when collided to the surface of the canvas
+            this.collision = function() {
+                if (this.x + this.vx > canvas.width - this.width || this.x + this.vx < this.width) {
+
+                    this.vx = -this.vx;
+
+
+                }
+
+
+            }
+
+
+        }
+        //adding rectangles in the array
+        for (var i = 0; i < numRects; i++) {
+
+            rects.push(new Rectangle(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 6 + 1, Math.random() * 4 + 5));
+
+        }
+        //adding circles in the array
+        for (var i = 0; i < numCircles; i++) {
+
+            circles.push(new Circle(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 6 + 1, Math.random() * 4 + 5));
+
+        }
+
+        main();
+
+        function main() {
+
+            startGame();
+
+        }
+
+        function startGame() {
+            updateGame();
+            window.requestAnimationFrame(drawGame);
+
+        }
+
+        function updateGame() {
+
+            // GAME LOGIC GOES HERE
+            for (var i = 0; i < circles.length; i++) {
+                circles[i].moveDown();
+                circles[i].collision();
+            }
+            for (var i = 0; i < rects.length; i++) {
+
+                rects[i].moveRight();
+                rects[i].collision();
+            }
+
+            window.setTimeout(updateGame, 33);
+        }
+
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // RENDERING STUFF GOES HERE
+            for (var i = 0; i < rects.length; i++) {
+
+                rects[i].draw();
+            }
+            for (var i = 0; i < circles.length; i++) {
+
+                circles[i].draw();
+            }
+            window.requestAnimationFrame(drawGame);
+
+        }
+    </script>
+
+</body>
+
+</html>
